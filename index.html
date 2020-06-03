@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <title>NodeJs</title>
     <link
       rel="stylesheet"
       href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -15,72 +14,62 @@
       crossorigin="anonymous"
     ></script>
     <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
       crossorigin="anonymous"
     ></script>
     <script
-      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+      integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
       crossorigin="anonymous"
     ></script>
 
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="./socket.io/socket.io.js"></script>
   </head>
   <body>
     <div class="container">
-      <div class="jumbotron">
-        <h1>Send Message</h1>
-        <br />
-        <input type="text" id="name" placeholder="Name" />
-        <br />
-        <br />
-        <textarea
-          name="message"
-          id="message"
-          cols="30"
-          rows="10"
-          placeholder="Message"
-          style="width: 100%;"
-        ></textarea>
-
-        <br />
-        <br />
-        <button id="send" class="btn btn-success">Send</button>
+      <br />
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="jumbotron">
+            <h3>Send Message</h3>
+            <br />
+            <form id="message-form" class="needs-validation" novalidate>
+              <div class="form-row">
+                <div class="col-md-12 mb-3">
+                  <label for="name">Name</label>
+                  <input type="text" class="form-control" id="name" required />
+                  <div class="invalid-feedback">
+                    Please provide a name.
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col-md-12 mb-3">
+                  <label for="name">Message</label>
+                  <textarea
+                    name="message"
+                    id="message"
+                    class="form-control"
+                    cols="30"
+                    rows="5"
+                    placeholder="Message"
+                    required
+                  ></textarea>
+                  <div class="invalid-feedback">
+                    Please provide message.
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-primary" type="submit">Send</button>
+            </form>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div id="message-stack"></div>
+        </div>
       </div>
-
-      <div id="messages-stack"></div>
     </div>
-
-    <script type="text/javascript">
-      var socket = io();
-      $(() => {
-        var msg = { name: "Hamid", body: "Hello!" };
-
-        $("#send").click(() => {
-          var message = { name: $("#name").val(), body: $("#message").val() };
-          postMessage(message);
-        });
-        getMessages();
-      });
-
-      socket.on("message", addMessage);
-
-      function addMessage(message) {
-        $("#messages-stack").append(
-          `<h4>${message.name}</h4><br/><p>${message.body}</p><hr class="my-4">`
-        );
-      }
-
-      function getMessages() {
-        $.get("http://localhost:9300/messages", data => {
-          data.forEach(addMessage);
-        });
-      }
-
-      function postMessage(message) {
-        $.post("http://localhost:9300/messages", message);
-      }
-    </script>
+    <script type="text/javascript" src="./index.js"></script>
   </body>
 </html>
