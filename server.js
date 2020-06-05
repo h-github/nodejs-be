@@ -34,7 +34,6 @@ app.get("/messages", (req, res) => {
 
 app.post("/messages", async (req, res) => {
   try {
-    throw "an error";
     var newMessage = new Message(req.body);
 
     var savedMessage = await newMessage.save();
