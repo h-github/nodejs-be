@@ -21,18 +21,21 @@ $(() => {
   });
 
   getMessages();
+
+  // $(".delete-message-btn").click(event => {
+  //   console.log($(event.target).data());
+  // });
 });
 
 addMessage = message => {
-  $("#message-stack").append(`<div class="card">
-    <div class="card-header">${message.name}</div>
-    <div class="card-body">
-      <blockquote class="blockquote mb-0">
-        <p>${message.body}</p>
-      </blockquote>
-     </div>
+  $("#message-stack").append(`<div id="${message._id}" class="card">
+    <div class="card-header">${message.name}
+    <button class="btn delete-message-btn" data-message-id="${message._id}" onclick="deleteMessage(this)"><i class="fa fa-trash"></i></button>
     </div>
-    <br/>`);
+    <div class="card-body" style="padding: 1rem">
+      <blockquote class="blockquote mb-0">
+        <p style="margin-bottom: 0">${message.body}</p>
+      </blockquote></div></div>`);
 };
 
 resetForm = () => {
@@ -49,7 +52,28 @@ getMessages = () => {
 };
 
 postMessage = message => {
-  $.post("http://localhost:3000/messages", message);
+  $.post("http://localhost:3000/message", message);
+};
+
+deleteMessage = btn => {
+  var id = $(btn).data("messageId");
+  console.log(id);
+
+  $.ajax({
+    url: `http://localhost:3000/message/${id}`,
+    method: "DELETE",
+  })
+    .then(function (data) {
+      console.log("deleted", data);
+    })
+    .catch(function (err) {
+      console.error(err);
+    });
+};
+
+removeMessage = message => {
+  $(`#${message._id}`).remove();
 };
 
 socket.on("message", addMessage);
+socket.on("message-removed", removeMessage);

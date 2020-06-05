@@ -32,7 +32,7 @@ app.get("/messages", (req, res) => {
   });
 });
 
-app.post("/messages", async (req, res) => {
+app.post("/message", async (req, res) => {
   try {
     var newMessage = new Message(req.body);
 
@@ -56,11 +56,24 @@ app.post("/messages", async (req, res) => {
   }
 });
 
+app.delete("/message/:messageId", (req, res) => {
+  if (req.params && req.params["messageId"]) {
+    var messageId = req.params["messageId"];
+    Message.findOneAndDelete({ _id: messageId }, (err, msg) => {
+      if (msg && msg.id) {
+        io.emit("message-removed", msg);
+        res.sendStatus(200);
+      }
+    });
+  }
+});
+
 mongoose.connect(
   dbUrl,
   { useUnifiedTopology: true, useNewUrlParser: true },
   err => console.log("Mongodb connection", err)
 );
+
 var server = http.listen(3000, () =>
   console.log(`Server is loaded on port ${server.address().port}`)
 );
