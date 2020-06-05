@@ -33,21 +33,28 @@ app.get("/messages", (req, res) => {
 });
 
 app.post("/messages", async (req, res) => {
-  var newMessage = new Message(req.body);
+  try {
+    throw "an error";
+    var newMessage = new Message(req.body);
 
-  var savedMessage = await newMessage.save();
-  console.log("message saved");
+    var savedMessage = await newMessage.save();
 
-  var censored = await Message.findOne({ body: "badword" });
+    console.log("message saved", savedMessage);
 
-  if (censored) await Message.deleteOne({ _id: censored.id });
-  else io.emit("message", newMessage);
+    var censored = await Message.findOne({ body: "badword" });
 
-  res.sendStatus(200);
-  // .catch(err => {
-  //   res.sendStatus(500);
-  //   return console.error(err);
-  // });
+    if (censored) await Message.deleteOne({ _id: censored.id });
+    else io.emit("message", newMessage);
+
+    res.sendStatus(200);
+
+    //end of try
+  } catch (error) {
+    res.sendStatus(500);
+    return console.error(error);
+  } finally {
+    console.log("message post called");
+  }
 });
 
 mongoose.connect(
