@@ -12,14 +12,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const dbName = "messages";
 const dbUrl = `mongodb+srv://primary-user:vG95bq9mOuLcXzVH@messaging-5pcyh.mongodb.net/${dbName}`;
 
-var Message = mongoose.model(
-  "Message",
+var schema = new mongoose.Schema(
   {
     name: String,
     body: String,
   },
-  "message-logs"
+  { collection: "message-logs" }
 );
+
+var Message = mongoose.model("Message", schema);
 
 io.on("connection", socket => {
   console.log("A user connected...");
@@ -37,6 +38,14 @@ app.post("/messages", (req, res) => {
   newMessage
     .save()
     .then(msg => {
+      Message.findOne({ body: "badword" }, (err, censored) => {
+        if (censored) {
+          console.log("censored word found!", censored);
+          Message.deleteOne({ _id: censored.id }, err => {
+            console.log("removed censored message");
+          });
+        }
+      });
       res.sendStatus(200);
       io.emit("message", newMessage);
     })
