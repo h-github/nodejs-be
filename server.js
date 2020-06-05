@@ -32,28 +32,22 @@ app.get("/messages", (req, res) => {
   });
 });
 
-app.post("/messages", (req, res) => {
+app.post("/messages", async (req, res) => {
   var newMessage = new Message(req.body);
 
-  newMessage
-    .save()
-    .then(() => {
-      console.log("message saved");
-      return Message.findOne({ body: "badword" });
-    })
-    .then(censored => {
-      if (censored) {
-        console.log("censored word found!", censored);
-        return Message.deleteOne({ _id: censored.id });
-      }
+  var savedMessage = await newMessage.save();
+  console.log("message saved");
 
-      res.sendStatus(200);
-      io.emit("message", newMessage);
-    })
-    .catch(err => {
-      res.sendStatus(500);
-      return console.error(err);
-    });
+  var censored = await Message.findOne({ body: "badword" });
+
+  if (censored) await Message.deleteOne({ _id: censored.id });
+  else io.emit("message", newMessage);
+
+  res.sendStatus(200);
+  // .catch(err => {
+  //   res.sendStatus(500);
+  //   return console.error(err);
+  // });
 });
 
 mongoose.connect(
