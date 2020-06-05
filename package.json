@@ -23,5 +23,8 @@
     "mongodb": "3.5.8",
     "mongoose": "5.9.17",
     "socket.io": "2.3.0"
+  },
+  "devDependencies": {
+    "jasmine": "3.5.0"
   }
 }
