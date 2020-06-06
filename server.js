@@ -32,6 +32,18 @@ app.get("/messages", (req, res) => {
   });
 });
 
+app.get("/messages/:userName", (req, res) => {
+  var userName = req.params["userName"];
+  if (userName) {
+    var regex = new RegExp(["^", userName, "$"].join(""), "i");
+    Message.find({ name: regex }, (err, messages) => {
+      res.send(messages);
+    });
+  } else {
+    res.sendStatus(500);
+  }
+});
+
 app.post("/message", async (req, res) => {
   try {
     var newMessage = new Message(req.body);
